@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Результат смешивания • Image Blender{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 col-lg-offset-1">
+
+        <!-- Заголовок результата -->
+        <div class="page-header text-center">
+            <h2>✨ Результат смешивания</h2>
+            <div class="alert alert-success">
+                <h3>Коэффициент смешивания: <strong>{{ alpha }}</strong></h3>
+            </div>
+        </div>
+
+        <!-- Результирующее изображение -->
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">🖼️ Результирующее изображение</h3>
+            </div>
+            <div class="panel-body text-center">
+                <img src="{{ blended_image }}" alt="Blended Image" class="img-thumbnail" style="max-width: 80%; border: 3px solid #E74C3C;">
+                <p class="text-muted" style="margin-top: 15px;">Изображение успешно обработано нейросетью</p>
+            </div>
+        </div>
+
+        <!-- Гистограммы -->
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">📊 Анализ распределения цветов</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="thumbnail">
+                            <img src="{{ histogram1 }}" alt="Histogram 1" class="img-responsive">
+                            <div class="caption text-center">
+                                <h4>Исходное изображение 1</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="thumbnail">
+                            <img src="{{ histogram2 }}" alt="Histogram 2" class="img-responsive">
+                            <div class="caption text-center">
+                                <h4>Исходное изображение 2</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="thumbnail">
+                            <img src="{{ histogram_blended }}" alt="Histogram Blended" class="img-responsive">
+                            <div class="caption text-center">
+                                <h4>Результирующее изображение</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center text-muted">
+                    Сравните распределение цветов исходных и результирующего изображений
+                </p>
+            </div>
+        </div>
+
+        <!-- Действия -->
+        <div class="text-center" style="margin: 30px 0;">
+            <a href="/" class="btn btn-success btn-lg">
+                <span class="glyphicon glyphicon-refresh"></span> Смешать другие изображения
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Анимация появления результатов
+$(document).ready(function() {
+    $('.thumbnail').each(function(index) {
+        $(this).css({
+            'opacity': '0',
+            'transform': 'translateY(30px)'
+        }).delay(index * 200).animate({
+            'opacity': '1',
+            'transform': 'translateY(0)'
+        }, 600);
+    });
+});
+</script>
+{% endblock %}

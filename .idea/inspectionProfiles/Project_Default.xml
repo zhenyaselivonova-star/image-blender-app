@@ -1,0 +1,30 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="sqlalchemy" />
+          <option value="psycopg2-binary" />
+          <option value="geoalchemy2" />
+          <option value="python-multipart" />
+          <option value="python-dotenv" />
+          <option value="python-jose" />
+          <option value="passlib" />
+          <option value="opencv-python" />
+          <option value="ultralytics" />
+          <option value="pillow" />
+          <option value="geopy" />
+          <option value="boto3" />
+          <option value="celery" />
+          <option value="redis" />
+          <option value="aiofiles" />
+          <option value="openpyxl" />
+          <option value="exifread" />
+          <option value="torch" />
+          <option value="yandexcloud" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

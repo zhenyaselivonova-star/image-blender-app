@@ -1,0 +1,109 @@
+/* Дополнительные стили для Superhero темы */
+body {
+    background: #2C3E50;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.4em;
+}
+
+.panel {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.panel-heading {
+    border-bottom: 2px solid #E74C3C;
+}
+
+.thumbnail {
+    background: #34495E;
+    border: 1px solid #2C3E50;
+    transition: all 0.3s ease;
+}
+
+.thumbnail:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.btn {
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        margin-top: 60px;
+    }
+
+    .navbar-brand {
+        font-size: 1.2em;
+    }
+
+    .btn-lg {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Специфические стили для формы */
+.form-control {
+    background: #34495E;
+    border: 1px solid #2C3E50;
+    color: #ECF0F1;
+}
+
+.form-control:focus {
+    background: #2C3E50;
+    border-color: #E74C3C;
+    color: #ECF0F1;
+    box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+}
+
+.help-block {
+    color: #BDC3C7;
+}
+
+/* Стили для ползунка */
+input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: #34495E;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #E74C3C;
+    cursor: pointer;
+    border: 2px solid #ECF0F1;
+}

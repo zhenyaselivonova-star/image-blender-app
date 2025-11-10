@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}🎨 Image Blender - Смешивание изображений{% endblock %}</title>
+
+    <!-- Bootstrap Superhero Theme -->
+    <link rel="stylesheet" href="https://bootstraptema.ru/snippets/style/2015/bootswatch/bootstrap-superhero-v3.3.6.css" media="screen">
+    <link rel="stylesheet" href="https://bootstraptema.ru/snippets/style/2015/bootswatch/custom.min.css">
+
+    <!-- Custom Styles -->
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a href="/" class="navbar-brand">🎨 Image Blender</a>
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/">Главная</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/zhenyaselivonova-star" target="_blank">
+                    <span class="glyphicon glyphicon-star"></span> Мой GitHub
+                </a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container" style="margin-top: 80px;">
+
+    <!-- Header -->
+    <div class="page-header text-center">
+        <h1>🎨 <strong>Image Blender</strong></h1>
+        <p class="lead">Создавайте уникальные изображения, смешивая две картинки с помощью нейросетей</p>
+    </div>
+
+    <!-- Content Block -->
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="text-center" style="margin-top: 50px; padding: 30px 0; border-top: 1px solid #2C3E50;">
+        <p>Лабораторная работа №3 • Вариант 4 • Разработка веб-сервисов • ТУСУР</p>
+        <p class="text-muted">
+            <a href="https://github.com/zhenyaselivonova-star" target="_blank" style="color: #95a5a6;">
+                <span class="glyphicon glyphicon-user"></span> zhenyaselivonova-star
+            </a>
+        </p>
+    </footer>
+</div>
+
+<!-- Bootstrap Scripts -->
+<script src="https://bootstraptema.ru/snippets/style/2015/bootswatch/jquery-1.10.2.min.js"></script>
+<script src="https://bootstraptema.ru/snippets/style/2015/bootswatch/bootstrap.min.js"></script>
+<script src="https://bootstraptema.ru/snippets/style/2015/bootswatch/custom.js"></script>
+
+<!-- Custom Scripts -->
+<script>
+// Анимация для ползунка
+$(document).ready(function() {
+    const rangeInput = document.getElementById('alpha');
+    const output = document.getElementById('alphaValue');
+
+    if (rangeInput && output) {
+        rangeInput.addEventListener('input', function() {
+            const value = this.value;
+            output.textContent = value;
+        });
+    }
+});
+
+// Обработка формы
+document.addEventListener('DOMContentLoaded', function() {
+    const blendForm = document.getElementById('blendForm');
+    if (blendForm) {
+        blendForm.addEventListener('submit', function(e) {
+            const response = grecaptcha.getResponse();
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (response.length === 0) {
+                e.preventDefault();
+                alert('❌ Пожалуйста, пройдите проверку reCAPTCHA');
+                return false;
+            }
+
+            // Показываем индикатор загрузки
+            submitBtn.innerHTML = '<span class="glyphicon glyphicon-refresh spinning"></span> Обработка...';
+            submitBtn.disabled = true;
+
+            document.getElementById('recaptchaResponse').value = response;
+        });
+    }
+
+    // Автоматически обновляем reCAPTCHA при ошибках
+    {% if error %}
+    if (typeof grecaptcha !== 'undefined') {
+        grecaptcha.reset();
+    }
+    {% endif %}
+});
+</script>
+
+<style>
+.spinning {
+    animation: spin 1s infinite linear;
+    display: inline-block;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+
+</body>
+</html>
