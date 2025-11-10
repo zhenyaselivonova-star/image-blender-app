@@ -8,7 +8,7 @@
 
         <!-- Заголовок результата -->
         <div class="page-header text-center">
-            <h2>✨ Результат смешивания</h2>
+            <h2> Результат смешивания</h2>
             <div class="alert alert-success">
                 <h3>Коэффициент смешивания: <strong>{{ alpha }}</strong></h3>
             </div>
@@ -17,47 +17,58 @@
         <!-- Результирующее изображение -->
         <div class="panel panel-primary">
             <div class="panel-heading">
-                <h3 class="panel-title text-center">🖼️ Результирующее изображение</h3>
+                <h3 class="panel-title text-center"> Результирующее изображение</h3>
             </div>
             <div class="panel-body text-center">
                 <img src="{{ blended_image }}" alt="Blended Image" class="img-thumbnail" style="max-width: 80%; border: 3px solid #E74C3C;">
-                <p class="text-muted" style="margin-top: 15px;">Изображение успешно обработано нейросетью</p>
+                <p class="text-muted" style="margin-top: 15px;">Изображение успешно обработано</p>
             </div>
         </div>
 
         <!-- Гистограммы -->
         <div class="panel panel-info">
             <div class="panel-heading">
-                <h3 class="panel-title text-center">📊 Анализ распределения цветов</h3>
+                <h3 class="panel-title text-center"> Анализ распределения цветов</h3>
             </div>
             <div class="panel-body">
+
                 <div class="row">
                     <div class="col-lg-4">
-                        <div class="thumbnail">
-                            <img src="{{ histogram1 }}" alt="Histogram 1" class="img-responsive">
+                        <div class="thumbnail" style="position: relative; min-height: 300px;">
+                            <img id="hist1" src="{{ histogram1 }}" alt="Histogram 1" class="img-responsive zoomable-histogram"
+                                 style="cursor: pointer; transition: all 0.4s ease; max-width: 100%; margin: 0 auto;"
+                                 onclick="toggleZoom('hist1')">
                             <div class="caption text-center">
                                 <h4>Исходное изображение 1</h4>
+                                <small class="text-muted">Нажмите для увеличения</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
-                        <div class="thumbnail">
-                            <img src="{{ histogram2 }}" alt="Histogram 2" class="img-responsive">
+                        <div class="thumbnail" style="position: relative; min-height: 300px;">
+                            <img id="hist2" src="{{ histogram2 }}" alt="Histogram 2" class="img-responsive zoomable-histogram"
+                                 style="cursor: pointer; transition: all 0.4s ease; max-width: 100%; margin: 0 auto;"
+                                 onclick="toggleZoom('hist2')">
                             <div class="caption text-center">
                                 <h4>Исходное изображение 2</h4>
+                                <small class="text-muted">Нажмите для увеличения</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4">
-                        <div class="thumbnail">
-                            <img src="{{ histogram_blended }}" alt="Histogram Blended" class="img-responsive">
+                        <div class="thumbnail" style="position: relative; min-height: 300px;">
+                            <img id="hist3" src="{{ histogram_blended }}" alt="Histogram Blended" class="img-responsive zoomable-histogram"
+                                 style="cursor: pointer; transition: all 0.4s ease; max-width: 100%; margin: 0 auto;"
+                                 onclick="toggleZoom('hist3')">
                             <div class="caption text-center">
                                 <h4>Результирующее изображение</h4>
+                                <small class="text-muted">Нажмите для увеличения</small>
                             </div>
                         </div>
                     </div>
                 </div>
-                <p class="text-center text-muted">
+
+                <p class="text-center text-muted" style="margin-top: 15px;">
                     Сравните распределение цветов исходных и результирующего изображений
                 </p>
             </div>
@@ -74,6 +85,106 @@
 </div>
 
 <script>
+// Хранение состояния увеличения для каждой гистограммы
+const zoomStates = {
+    'hist1': false,
+    'hist2': false,
+    'hist3': false
+};
+
+// Функция переключения увеличения по клику
+function toggleZoom(histogramId) {
+    const img = document.getElementById(histogramId);
+
+    if (zoomStates[histogramId]) {
+        // Если уже увеличено - сбрасываем
+        resetZoom(img);
+        zoomStates[histogramId] = false;
+    } else {
+        // Если не увеличено - увеличиваем
+        applyZoom(img);
+        zoomStates[histogramId] = true;
+
+        // Сбрасываем остальные гистограммы
+        Object.keys(zoomStates).forEach(id => {
+            if (id !== histogramId && zoomStates[id]) {
+                const otherImg = document.getElementById(id);
+                resetZoom(otherImg);
+                zoomStates[id] = false;
+            }
+        });
+    }
+}
+
+// Применить увеличение
+function applyZoom(img) {
+    // Создаем клон изображения для увеличения
+    const clone = img.cloneNode(true);
+    clone.id = 'zoomed-image';
+    clone.classList.add('zoomed-active');
+
+    // Устанавливаем стили для клона
+    clone.style.position = 'fixed';
+    clone.style.top = '50%';
+    clone.style.left = '50%';
+    clone.style.transform = 'translate(-50%, -50%) scale(1.8)';
+    clone.style.maxWidth = '90vw';
+    clone.style.maxHeight = '90vh';
+    clone.style.boxShadow = '0 0 30px rgba(0,0,0,0.8)';
+    clone.style.background = '#2C3E50';
+    clone.style.padding = '20px';
+    clone.style.borderRadius = '10px';
+    clone.style.border = '3px solid #E74C3C';
+    clone.style.zIndex = '10000';
+    clone.style.cursor = 'pointer';
+    clone.onclick = resetAllZoom;
+
+    // Добавляем затемнение фона
+    const overlay = document.createElement('div');
+    overlay.id = 'zoom-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.85)';
+    overlay.style.zIndex = '9999';
+    overlay.style.cursor = 'pointer';
+    overlay.onclick = resetAllZoom;
+
+    // Добавляем элементы в body
+    document.body.appendChild(overlay);
+    document.body.appendChild(clone);
+
+    // Блокируем прокрутку страницы
+    document.body.style.overflow = 'hidden';
+}
+
+// Сбросить увеличение
+function resetZoom(img) {
+    // Удаляем увеличенное изображение и оверлей
+    const zoomedImage = document.getElementById('zoomed-image');
+    const overlay = document.getElementById('zoom-overlay');
+
+    if (zoomedImage) {
+        zoomedImage.remove();
+    }
+    if (overlay) {
+        overlay.remove();
+    }
+
+    // Разблокируем прокрутку страницы
+    document.body.style.overflow = '';
+}
+
+// Функция сброса всех увеличений
+function resetAllZoom() {
+    Object.keys(zoomStates).forEach(id => {
+        zoomStates[id] = false;
+    });
+    resetZoom();
+}
+
 // Анимация появления результатов
 $(document).ready(function() {
     $('.thumbnail').each(function(index) {
@@ -86,5 +197,54 @@ $(document).ready(function() {
         }, 600);
     });
 });
+
 </script>
+
+<style>
+.zoomable-histogram {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.zoomable-histogram:hover {
+    border-color: #E74C3C;
+    transform: scale(1.02);
+}
+
+.thumbnail {
+    transition: all 0.3s ease;
+    overflow: visible !important;
+}
+
+.thumbnail:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+/* Стили для увеличенного изображения */
+.zoomed-active {
+    animation: zoomIn 0.3s ease-out;
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.8);
+    }
+}
+
+/* Предотвращаем обрезку */
+.panel-body {
+    overflow: visible !important;
+}
+
+.row {
+    overflow: visible !important;
+}
+</style>
 {% endblock %}

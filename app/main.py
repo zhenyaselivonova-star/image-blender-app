@@ -13,7 +13,7 @@ from .utils import blend_images, create_histogram
 
 app = FastAPI(title="Image Blender", version="1.0.0")
 
-# ВАШИ НОВЫЕ КЛЮЧИ reCAPTCHA
+#КЛЮЧИ reCAPTCHA
 RECAPTCHA_SITE_KEY = "6LcEFwgsAAAAAEhCt5kp2l-VJBgG0i5rPs804Ue6"
 RECAPTCHA_SECRET_KEY = "6LcEFwgsAAAAAOspJLpwLKXLiYOa2DhpfSFspKED"
 
@@ -71,7 +71,7 @@ async def blend_images_endpoint(
         return templates.TemplateResponse("index.html", {
             "request": request,
             "recaptcha_site_key": RECAPTCHA_SITE_KEY,
-            "error": "Пожалуйста, пройдите проверку reCAPTCHA"
+            "error": "Пожалуйста, пройдите проверку"
         })
 
     try:
@@ -86,9 +86,9 @@ async def blend_images_endpoint(
         blended_img = blend_images(img1, img2, alpha)
 
         # Создание гистограмм
-        hist1 = create_histogram(img1, "Исходное изображение 1")
-        hist2 = create_histogram(img2, "Исходное изображение 2")
-        hist_blended = create_histogram(blended_img, "Результирующее изображение")
+        hist1 = create_histogram(img1, "график 1")
+        hist2 = create_histogram(img2, "график 2")
+        hist_blended = create_histogram(blended_img, "результат смешивания графиков")
 
         # Сохранение результата
         blended_path = "static/uploads/blended_result.jpg"
