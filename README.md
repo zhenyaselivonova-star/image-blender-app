@@ -7,10 +7,9 @@
 - Анализ цветовых распределений (гистограммы)
 - Защита reCAPTCHA
 
+
 ##  Технологии
-=======
-##  Технологии
->>>>>>> c72fc170e8dd0b0500e581aba2f697fcf3844a2e
+
 - **Backend:** FastAPI, Python
 - **Frontend:** HTML, Jinja2, Bootstrap Superhero
 - **Обработка изображений:** Pillow, NumPy, Matplotlib
