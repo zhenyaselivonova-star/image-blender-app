@@ -14,8 +14,8 @@ from .utils import blend_images, create_histogram
 app = FastAPI(title="Image Blender", version="1.0.0")
 
 #КЛЮЧИ reCAPTCHA
-RECAPTCHA_SITE_KEY = "6LfiVCQsAAAAAPGWimHhZyucBVW_BNOX1wcirt85"
-RECAPTCHA_SECRET_KEY = "6LfiVCQsAAAAAIso-BTpYw0so5eCJB_0UVSLFwdm"
+RECAPTCHA_SITE_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+RECAPTCHA_SECRET_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"
 
 # Настройка путей
 app.mount("/static", StaticFiles(directory="static"), name="static")
