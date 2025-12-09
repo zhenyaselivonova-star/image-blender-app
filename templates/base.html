@@ -3,11 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Смешивание изображений{% endblock %}</title>
+    <title>{% block title %}AI Image Blender{% endblock %}</title>
 
-    <!-- Bootstrap Superhero Theme -->
-    <link rel="stylesheet" href="https://bootstraptema.ru/snippets/style/2015/bootswatch/bootstrap-superhero-v3.3.6.css" media="screen">
-    <link rel="stylesheet" href="https://bootstraptema.ru/snippets/style/2015/bootswatch/custom.min.css">
+    <!-- Шрифты -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Иконки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Modern CSS Reset -->
+    <style>
+        :root {
+            --primary: #8B5CF6;
+            --primary-dark: #7C3AED;
+            --secondary: #10B981;
+            --accent: #F59E0B;
+            --danger: #EF4444;
+            --bg-dark: #0F172A;
+            --bg-card: #1E293B;
+            --bg-input: #334155;
+            --text: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border: #475569;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            --gradient: linear-gradient(135deg, #8B5CF6 0%, #3B82F6 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Анимированный фон */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            z-index: -1;
+            animation: gradientShift 20s ease infinite alternate;
+        }
+
+        @keyframes gradientShift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-50px, 50px) scale(1.1); }
+        }
+    </style>
 
     <!-- Custom Styles -->
     <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
@@ -15,102 +73,297 @@
 </head>
 <body>
 
-<!-- Navigation -->
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <a href="/" class="navbar-brand"> Смешивание изображения</a>
-            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
+<!-- Modern Navigation -->
+<nav class="navbar-modern">
+    <div class="nav-container">
+        <div class="nav-brand">
+            <i class="fas fa-blender-phone"></i>
+            <span>AI Image Blender</span>
         </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="/">Главная</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="https://github.com/zhenyaselivonova-star" target="_blank">
-                    <span class="glyphicon glyphicon-star"></span> Мой GitHub
-                </a></li>
-            </ul>
+        
+        <button class="nav-toggle" id="navToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-menu" id="navMenu">
+            <a href="/" class="nav-link active">
+                <i class="fas fa-home"></i>
+                <span>Главная</span>
+            </a>
+            <a href="https://github.com/zhenyaselivonova-star" target="_blank" class="nav-link">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
         </div>
     </div>
 </nav>
 
 <!-- Main Content -->
-<div class="container" style="margin-top: 80px;">
-
+<main class="main-container">
     <!-- Header -->
-    <div class="page-header text-center">
-        <h1> <strong>Смешивание изображений</strong></h1>
-        <p class="lead">Создавайте уникальные изображения, смешивая две картинки</p>
-    </div>
+    <header class="page-header">
+        <h1 class="page-title">
+            <i class="fas fa-magic"></i>
+            <strong>AI Смешивание изображений</strong>
+        </h1>
+        <p class="page-subtitle">Создавайте уникальные изображения с помощью искусственного интеллекта</p>
+    </header>
 
     <!-- Content Block -->
     {% block content %}{% endblock %}
+</main>
 
+<!-- Скрипты -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<!-- Bootstrap Scripts -->
-<script src="https://bootstraptema.ru/snippets/style/2015/bootswatch/jquery-1.10.2.min.js"></script>
-<script src="https://bootstraptema.ru/snippets/style/2015/bootswatch/bootstrap.min.js"></script>
-<script src="https://bootstraptema.ru/snippets/style/2015/bootswatch/custom.js"></script>
-
-<!-- Custom Scripts -->
 <script>
-// Анимация для ползунка
+// Анимация навигации
 $(document).ready(function() {
-    const rangeInput = document.getElementById('alpha');
-    const output = document.getElementById('alphaValue');
+    // Переключение мобильного меню
+    $('#navToggle').click(function() {
+        $('#navMenu').toggleClass('active');
+    });
 
-    if (rangeInput && output) {
-        rangeInput.addEventListener('input', function() {
-            const value = this.value;
-            output.textContent = value;
+    // Плавная прокрутка
+    $('.nav-link').on('click', function(e) {
+        if (this.hash !== '') {
+            e.preventDefault();
+            const hash = this.hash;
+            $('html, body').animate({
+                scrollTop: $(hash).offset().top - 80
+            }, 800);
+        }
+    });
+
+    // Анимация появления элементов
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
         });
-    }
+    }, observerOptions);
+
+    // Наблюдаем за всеми блоками
+    document.querySelectorAll('.card, .form-group, .thumbnail').forEach(el => {
+        observer.observe(el);
+    });
+
+    // Анимация загрузки
+    window.addEventListener('load', function() {
+        document.body.classList.add('loaded');
+    });
 });
 
-// Обработка формы
-document.addEventListener('DOMContentLoaded', function() {
-    const blendForm = document.getElementById('blendForm');
-    if (blendForm) {
-        blendForm.addEventListener('submit', function(e) {
-            const response = grecaptcha.getResponse();
-            const submitBtn = document.getElementById('submitBtn');
+// Ползунок смешивания
+function updateAlphaValue(value) {
+    $('#alphaValue').text(value);
+    const percent = (value * 100).toFixed(0);
+    $('#alphaValue').css({
+        'background': `linear-gradient(90deg, var(--primary) 0%, var(--secondary) ${percent}%, var(--bg-input) ${percent}%)`
+    });
+}
 
-            if (response.length === 0) {
+// Обработка формы
+$(document).ready(function() {
+    const blendForm = $('#blendForm');
+    if (blendForm.length) {
+        blendForm.on('submit', function(e) {
+            const response = grecaptcha.getResponse();
+            const submitBtn = $('#submitBtn');
+
+            if (!response) {
                 e.preventDefault();
-                alert(' Пожалуйста, пройдите проверку ');
+                showAlert('Пожалуйста, пройдите проверку reCAPTCHA', 'warning');
+                grecaptcha.reset();
                 return false;
             }
 
             // Показываем индикатор загрузки
-            submitBtn.innerHTML = '<span class="glyphicon glyphicon-refresh spinning"></span> Обработка...';
-            submitBtn.disabled = true;
+            submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Обработка...');
+            submitBtn.prop('disabled', true);
 
-            document.getElementById('recaptchaResponse').value = response;
+            $('#recaptchaResponse').val(response);
         });
     }
 
-    // Автоматически обновляем reCAPTCHA при ошибках
     {% if error %}
     if (typeof grecaptcha !== 'undefined') {
         grecaptcha.reset();
     }
+    showAlert('{{ error }}', 'danger');
     {% endif %}
+});
+
+// Уведомления
+function showAlert(message, type = 'info') {
+    const alertHtml = `
+        <div class="alert alert-${type} animate-in">
+            <button type="button" class="alert-close">&times;</button>
+            <div class="alert-content">
+                <i class="fas fa-${type === 'danger' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        </div>
+    `;
+    
+    $('.page-header').after(alertHtml);
+    
+    // Автоматическое скрытие
+    setTimeout(() => {
+        $('.alert').addClass('fade-out');
+        setTimeout(() => $('.alert').remove(), 300);
+    }, 5000);
+    
+    // Закрытие по клику
+    $('.alert-close').on('click', function() {
+        $(this).parent().addClass('fade-out');
+        setTimeout(() => $(this).parent().remove(), 300);
+    });
+}
+
+// Увеличение гистограмм
+let currentZoom = null;
+
+function toggleZoom(histogramId) {
+    const img = document.getElementById(histogramId);
+    
+    if (currentZoom === histogramId) {
+        resetZoom();
+        currentZoom = null;
+    } else {
+        applyZoom(img);
+        currentZoom = histogramId;
+    }
+}
+
+function applyZoom(img) {
+    const clone = img.cloneNode(true);
+    clone.id = 'zoomed-image';
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'zoom-overlay';
+    
+    // Стилизация
+    clone.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(2);
+        max-width: 90vw;
+        max-height: 90vh;
+        z-index: 10000;
+        border-radius: 16px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        border: 3px solid var(--primary);
+        cursor: zoom-out;
+        animation: zoomIn 0.3s ease-out;
+    `;
+    
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        z-index: 9999;
+        cursor: zoom-out;
+    `;
+    
+    overlay.onclick = resetZoom;
+    clone.onclick = resetZoom;
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(clone);
+    document.body.style.overflow = 'hidden';
+}
+
+function resetZoom() {
+    $('#zoomed-image, #zoom-overlay').remove();
+    document.body.style.overflow = '';
+    currentZoom = null;
+}
+
+// Анимации
+document.addEventListener('DOMContentLoaded', function() {
+    // Плавное появление
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
+    
+    setTimeout(() => {
+        document.body.style.opacity = '1';
+    }, 100);
+    
+    // Параллакс эффект
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        const parallax = document.querySelector('.page-header');
+        if (parallax) {
+            parallax.style.transform = `translateY(${scrolled * 0.1}px)`;
+        }
+    });
 });
 </script>
 
 <style>
-.spinning {
-    animation: spin 1s infinite linear;
-    display: inline-block;
+/* Анимации */
+@keyframes zoomIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(2); }
 }
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.fade-out {
+    opacity: 0 !important;
+    transform: translateY(-20px) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-menu {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        background: var(--bg-card);
+        flex-direction: column;
+        padding: 20px;
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+        border-top: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
+    
+    .nav-menu.active {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+    }
 }
 </style>
 
