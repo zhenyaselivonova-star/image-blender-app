@@ -1,81 +1,548 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-8 col-lg-offset-2">
-
+<div class="content-wrapper">
+    <div class="card-container">
+        
         <!-- Форма загрузки -->
-        <div class="panel panel-primary">
-            <div class="panel-heading">
-                <h3 class="panel-title text-center"> Загрузка изображений</h3>
+        <div class="card form-card animate-in">
+            <div class="card-header">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h2>Загрузка изображений</h2>
             </div>
-            <div class="panel-body">
-
+            
+            <div class="card-body">
                 {% if error %}
-                <div class="alert alert-dismissible alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Ошибка!</strong> {{ error }}
+                <div class="alert alert-danger animate-in">
+                    <div class="alert-content">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>{{ error }}</span>
+                    </div>
+                    <button type="button" class="alert-close">&times;</button>
                 </div>
                 {% endif %}
 
-                <form action="/blend" method="post" enctype="multipart/form-data" class="form-horizontal" id="blendForm">
+                <form action="/blend" method="post" enctype="multipart/form-data" class="modern-form" id="blendForm">
 
                     <!-- Изображение 1 -->
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Первое изображение:</label>
-                        <div class="col-lg-9">
-                            <input type="file" class="form-control" name="image1" accept="image/*" required>
-                            <span class="help-block">Выберите первое изображение (JPG, PNG, JPEG)</span>
+                    <div class="form-group file-upload-group">
+                        <label class="form-label">
+                            <i class="fas fa-image"></i>
+                            <span>Первое изображение</span>
+                        </label>
+                        <div class="file-upload-area" id="dropArea1">
+                            <i class="fas fa-cloud-upload-alt fa-3x"></i>
+                            <p>Перетащите файл или нажмите для выбора</p>
+                            <span class="file-types">JPG, PNG, JPEG</span>
+                            <input type="file" name="image1" accept="image/*" required 
+                                   class="file-input" id="fileInput1"
+                                   onchange="previewImage(this, 'preview1')">
                         </div>
+                        <div id="preview1" class="image-preview"></div>
                     </div>
 
                     <!-- Изображение 2 -->
-                    <div class="form-group">
-                        <label class="col-lg-3 control-label">Второе изображение:</label>
-                        <div class="col-lg-9">
-                            <input type="file" class="form-control" name="image2" accept="image/*" required>
-                            <span class="help-block">Выберите второе изображение (JPG, PNG, JPEG)</span>
+                    <div class="form-group file-upload-group">
+                        <label class="form-label">
+                            <i class="fas fa-images"></i>
+                            <span>Второе изображение</span>
+                        </label>
+                        <div class="file-upload-area" id="dropArea2">
+                            <i class="fas fa-cloud-upload-alt fa-3x"></i>
+                            <p>Перетащите файл или нажмите для выбора</p>
+                            <span class="file-types">JPG, PNG, JPEG</span>
+                            <input type="file" name="image2" accept="image/*" required 
+                                   class="file-input" id="fileInput2"
+                                   onchange="previewImage(this, 'preview2')">
                         </div>
+                        <div id="preview2" class="image-preview"></div>
                     </div>
 
                     <!-- Ползунок смешивания -->
                     <div class="form-group">
-                        <label class="col-lg-3 control-label">Коэффициент смешивания:</label>
-                        <div class="col-lg-9">
-                            <input type="range" class="form-control" id="alpha" name="alpha" min="0" max="1" step="0.1" value="0.5"
-                                   oninput="alphaValue.value = this.value">
-                            <div class="text-center" style="margin-top: 10px;">
-                                <output id="alphaValue" class="btn btn-info btn-sm">0.5</output>
+                        <label class="form-label">
+                            <i class="fas fa-sliders-h"></i>
+                            <span>Коэффициент смешивания</span>
+                        </label>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span>Изображение 1</span>
+                                <span class="slider-value" id="alphaValue">0.5</span>
+                                <span>Изображение 2</span>
                             </div>
-                            <span class="help-block">
-                                0 = полное второе изображение, 0.5 = равное смешивание, 1 = полное первое изображение
-                            </span>
+                            <input type="range" class="modern-slider" id="alpha" name="alpha" 
+                                   min="0" max="1" step="0.1" value="0.5"
+                                   oninput="updateAlphaValue(this.value)">
+                            <div class="slider-legend">
+                                <span>0 = Второе изображение</span>
+                                <span>0.5 = Равное смешивание</span>
+                                <span>1 = Первое изображение</span>
+                            </div>
                         </div>
                     </div>
 
                     <!-- reCAPTCHA -->
                     <div class="form-group">
-                        <label class="col-lg-3 control-label">Проверка безопасности:</label>
-                        <div class="col-lg-9">
+                        <label class="form-label">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Проверка безопасности</span>
+                        </label>
+                        <div class="captcha-container">
                             <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
                             <input type="hidden" name="recaptcha_response" id="recaptchaResponse">
-                            <span class="help-block">Подтвердите, что вы не робот</span>
+                            <p class="help-text">
+                                <i class="fas fa-info-circle"></i>
+                                Подтвердите, что вы не робот
+                            </p>
                         </div>
                     </div>
 
                     <!-- Кнопка отправки -->
                     <div class="form-group">
-                        <div class="col-lg-12 text-center">
-                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-                                <span class="glyphicon glyphicon-wrench"></span> Смешать изображения
-                            </button>
-                        </div>
+                        <button type="submit" class="btn-primary btn-submit" id="submitBtn">
+                            <i class="fas fa-magic"></i>
+                            <span>Смешать изображения</span>
+                        </button>
                     </div>
 
                 </form>
             </div>
         </div>
 
+        <!-- Информационная карточка -->
+        <div class="card info-card animate-in" style="animation-delay: 0.2s">
+            <div class="card-header">
+                <i class="fas fa-lightbulb"></i>
+                <h2>Как это работает?</h2>
+            </div>
+            <div class="card-body">
+                <div class="feature-list">
+                    <div class="feature">
+                        <i class="fas fa-upload"></i>
+                        <div>
+                            <h4>1. Загрузка</h4>
+                            <p>Загрузите два изображения в формате JPG, PNG или JPEG</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-sliders-h"></i>
+                        <div>
+                            <h4>2. Настройка</h4>
+                            <p>Выберите коэффициент смешивания с помощью ползунка</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-robot"></i>
+                        <div>
+                            <h4>3. AI Обработка</h4>
+                            <p>Искусственный интеллект смешает изображения</p>
+                        </div>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chart-bar"></i>
+                        <div>
+                            <h4>4. Анализ</h4>
+                            <p>Получите результат и гистограммы распределения цветов</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<script>
+// Предпросмотр изображений
+function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    preview.innerHTML = '';
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'preview-img';
+            
+            const fileName = document.createElement('p');
+            fileName.className = 'file-name';
+            fileName.textContent = input.files[0].name;
+            
+            preview.appendChild(img);
+            preview.appendChild(fileName);
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Drag & Drop функционал
+['dropArea1', 'dropArea2'].forEach(id => {
+    const dropArea = document.getElementById(id);
+    const fileInput = dropArea.querySelector('.file-input');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+        dropArea.classList.add('highlight');
+    }
+    
+    function unhighlight() {
+        dropArea.classList.remove('highlight');
+    }
+    
+    dropArea.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        
+        // Запускаем предпросмотр
+        const previewId = dropArea.id === 'dropArea1' ? 'preview1' : 'preview2';
+        previewImage(fileInput, previewId);
+    }
+    
+    dropArea.addEventListener('click', () => fileInput.click());
+});
+
+// Инициализация ползунка
+$(document).ready(function() {
+    updateAlphaValue(0.5);
+});
+</script>
+
+<style>
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.card-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+@media (min-width: 992px) {
+    .card-container {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+.card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.card-header {
+    background: var(--gradient);
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.3rem;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+/* Стили формы */
+.modern-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--text);
+    font-size: 1.1rem;
+}
+
+.form-label i {
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+/* Загрузка файлов */
+.file-upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 15px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--bg-input);
+}
+
+.file-upload-area:hover {
+    border-color: var(--primary);
+    background: var(--bg-card);
+}
+
+.file-upload-area.highlight {
+    border-color: var(--secondary);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.file-upload-area i {
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.file-upload-area p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+}
+
+.file-types {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.file-input {
+    display: none;
+}
+
+.image-preview {
+    margin-top: 15px;
+    min-height: 100px;
+}
+
+.preview-img {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+}
+
+.file-name {
+    margin-top: 10px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    word-break: break-all;
+}
+
+/* Ползунок */
+.slider-container {
+    background: var(--bg-input);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid var(--border);
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.slider-value {
+    background: var(--gradient);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    min-width: 60px;
+    text-align: center;
+}
+
+.modern-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 12px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    outline: none;
+    margin: 15px 0;
+}
+
+.modern-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--gradient);
+    cursor: pointer;
+    border: 4px solid var(--bg-dark);
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    transition: all 0.2s ease;
+}
+
+.modern-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+}
+
+.slider-legend {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* reCAPTCHA */
+.captcha-container {
+    background: var(--bg-input);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid var(--border);
+}
+
+.help-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.help-text i {
+    color: var(--primary);
+}
+
+/* Кнопка */
+.btn-submit {
+    background: var(--gradient);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 18px 30px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Информационная карточка */
+.feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.feature i {
+    color: var(--primary);
+    font-size: 1.5rem;
+    margin-top: 5px;
+}
+
+.feature h4 {
+    color: var(--text);
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.feature p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Уведомления */
+.alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    animation: fadeInUp 0.5s ease;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--danger);
+    color: #FCA5A5;
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0 5px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.alert-close:hover {
+    opacity: 1;
+}
+</style>
 {% endblock %}
